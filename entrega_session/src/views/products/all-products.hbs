@@ -1,0 +1,22 @@
+<div>
+  <h1>Products:</h1>
+
+  <div class="row">
+    {{#each products}}
+      <div class="col-md-3">
+        <div class="card my-3">
+          {{!-- <img src="{{thumbnail}}" class="card-img-top" alt="..."> --}}
+          <div class="card-body">
+            <h5 class="card-title text-center">{{productName}}</h5>
+            <p class="card-text">{{description}}</p>
+            <p class="card-text">Price: $ {{price}}</p>
+            <p class="card-text">Stock: {{stock}}</p>
+            <a href="#" class="btn btn-primary"><i
+                class="bi bi-cart-plus-fill px-2"
+              ></i>Add to cart</a>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>

@@ -1,0 +1,70 @@
+{{! <div class="container">
+    <div class="card">
+
+    </div>
+</div> }}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card border border-primary">
+        <div class="card-body">
+          <h1 class="mb-4">Sign Up</h1>
+          <form method="POST">
+            <div class="mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input
+                type="text"
+                class="form-control border border-primary-subtle"
+                id="name"
+                placeholder="John"
+                name="name"
+                value="{{name}}"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address</label>
+              <input
+                type="email"
+                class="form-control border border-primary-subtle"
+                id="email"
+                aria-describedby="emailHelp"
+                placeholder="example@mail.com"
+                name="email"
+                value="{{email}}"
+                required
+              />
+              <div id="emailHelp" class="form-text">We'll never share your email
+                with anyone else.</div>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control border border-primary-subtle"
+                id="password"
+                placeholder="********"
+                name="password"
+                required
+              />
+            </div>
+            {{!-- <div class="mb-3">
+              <label for="confirm-password" class="form-label">Confirm Password</label>
+              <input
+                type="password"
+                class="form-control border border-primary-subtle"
+                id="confirm-password"
+                placeholder="********"
+                name="confirm_password"
+                required
+              />
+            </div> --}}
+            <a href="./login">
+              <label for="">Already have an account? Log in</label></a><br />
+            <button type="submit" class="btn btn-primary my-2">Sign Up</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

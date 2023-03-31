@@ -1,0 +1,35 @@
+<div>
+    <h1>Cart</h1>
+
+    <div class="row">
+        <div class="col-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                {{#each carts}}
+                {{!-- <div class="card my-3">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">{{productName}}</h5>
+                        <p class="card-text">{{description}}</p>
+                        <p class="card-text">Price: $ {{price}}</p>
+                        <p class="card-text">Stock: {{stock}}</p>
+                        <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus-fill px-2"></i>Add to cart</a>
+                    </div>
+                </div> --}}
+
+                <tbody>
+                    <tr>
+                        {{!-- <th scope="row">1</th> --}}
+                        <td>{{productName}}</td>
+                        <td>$ {{price}}</td>
+                    </tr>
+                </tbody>
+                {{/each}}
+            </table>
+        </div>
+
+    </div>

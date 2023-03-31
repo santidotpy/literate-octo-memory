@@ -1,0 +1,26 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css");
+body {
+  background: rgb(93, 92, 92);
+  color: white;
+}
+
+
+.form-control {
+  border-radius: 25px;
+  height: 50px;
+}
+.form-check-input {
+  margin-top: 15px;
+}
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  border-radius: 25px;
+  height: 50px;
+  font-size: 18px;
+  font-weight: 500;
+}
+.btn-primary:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
