@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { UserMongo } from "../dao/MongoDB/models/User.js";
+import { createHash, validatePassword } from "../utils/bcrypt.js";
 
 const routerAuth = Router();
 const managerUser = new UserMongo();
@@ -30,11 +31,12 @@ routerAuth.post("/signup", async (req, res) => {
         name,
       });
     } else {
+      const hashedpassword = createHash(password);
       await managerUser.addElements([
         {
           name,
           email,
-          password,
+          password: hashedpassword,
         },
       ]);
       res.redirect("/auth/login");
@@ -56,7 +58,7 @@ routerAuth.post("/login", async (req, res) => {
 
   try {
     //if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
-    if (user && user.password === password) {
+    if (user && validatePassword(password, user.password)) {
       // if user is logged in
 
       req.session.login = true;
