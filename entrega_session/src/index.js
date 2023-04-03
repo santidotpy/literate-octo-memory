@@ -5,7 +5,7 @@ import { Server } from "socket.io";
 import __dirname from "./path.js";
 import path, { format } from "path";
 
-import { ProductMongo } from "./dao/MongoDB/models/Product.js";
+//import { ProductMongo } from "./dao/MongoDB/models/Product.js";
 
 import cookieParser from "cookie-parser";
 import MongoStore from "connect-mongo";
@@ -30,7 +30,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
     store: MongoStore.create({
-      mongoUrl: process.env.MONGOURL,
+      mongoUrl: process.env.mongoUrl,
       mongoOptions: {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -58,7 +58,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // socekts
 const server = app.listen(app.get("port"), () =>
-  console.log(`Server on port ${app.get("port")}`)
+  console.log(`✅ Server running on: http://localhost:${app.get("port")}`)
 );
 
 const io = new Server(server);
