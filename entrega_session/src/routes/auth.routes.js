@@ -58,7 +58,7 @@ routerAuth.post("/login", async (req, res) => {
 
   try {
     //if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
-    if (user && validatePassword(password, user.password)) {
+    if (email === user.email && validatePassword(password, user.password)) {
       // if user is logged in
 
       req.session.login = true;
