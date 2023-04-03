@@ -13,6 +13,6 @@ const schema = {
 
 export class ProductMongo extends mongoManager {
   constructor() {
-    super(process.env.MONGOURL, "products", schema);
+    super(process.env.mongoUrl, "products", schema);
   }
 }

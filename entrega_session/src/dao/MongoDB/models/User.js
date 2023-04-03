@@ -11,7 +11,7 @@ const schema = new Schema({
 
 export class UserMongo extends mongoManager {
   constructor() {
-    super(process.env.MONGOURL, "users", schema);
+    super(process.env.mongoUrl, "users", schema);
   }
 
   // encriptar contraseña todavia no lo uso

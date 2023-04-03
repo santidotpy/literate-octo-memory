@@ -15,7 +15,7 @@ const schema = {
 
 export class CartMongo extends mongoManager {
   constructor() {
-    super(process.env.MONGOURL, "carts", schema);
+    super(process.env.mongoUrl, "carts", schema);
   }
   async addProductCart(id, idProd, qty) {
     super.connect();

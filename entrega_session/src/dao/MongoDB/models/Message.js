@@ -9,6 +9,6 @@ const schema = new Schema({
 
 export class MessageMongo extends mongoManager {
   constructor() {
-    super(process.env.MONGOURL, "messages", schema);
+    super(process.env.mongoUrl, "messages", schema);
   }
 }
