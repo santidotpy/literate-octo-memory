@@ -10,6 +10,8 @@ import path, { format } from "path";
 import cookieParser from "cookie-parser";
 import MongoStore from "connect-mongo";
 import session from "express-session";
+import passport from "passport";
+import initializePassport from "./config/passport.js";
 
 import routerProd from "./routes/products.routes.js";
 import routerCart from "./routes/carts.routes.js";
@@ -38,6 +40,10 @@ app.use(
     }),
   })
 );
+// PASSPORT
+initializePassport(passport);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.set("views", path.join(__dirname, "views"));
 app.engine(

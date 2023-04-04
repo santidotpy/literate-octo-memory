@@ -1,47 +1,17 @@
 import { Router } from "express";
 import { UserMongo } from "../dao/MongoDB/models/User.js";
 import { createHash, validatePassword } from "../utils/bcrypt.js";
+import passport from "passport";
 
 const routerAuth = Router();
-const managerUser = new UserMongo();
+export const managerUser = new UserMongo();
 
 routerAuth.get("/signup", (req, res) => {
   res.render("auth/signup");
 });
 
-routerAuth.post("/signup", async (req, res) => {
-  const errors = [];
-  const { name, email, password } = req.body;
-  console.log(email);
-  if (password.length < 8) {
-    errors.push({ text: "Password must be at least 8 characters" });
-  }
-  if (errors.length > 0) {
-    res.render("auth/signup", {
-      errors,
-      name,
-      email,
-    });
-  } else {
-    const emailUser = await managerUser.getUserByEmail(email);
-    if (emailUser) {
-      errors.push({ text: "The Email is already in use." });
-      res.render("auth/signup", {
-        errors,
-        name,
-      });
-    } else {
-      const hashedpassword = createHash(password);
-      await managerUser.addElements([
-        {
-          name,
-          email,
-          password: hashedpassword,
-        },
-      ]);
-      res.redirect("/auth/login");
-    }
-  }
+routerAuth.post("/signup", passport.authenticate('register') , async (req, res) => {
+  res.send({status: "success", message: "User created successfully"})
 });
 
 routerAuth.get("/login", (req, res) => {
@@ -52,26 +22,22 @@ routerAuth.get("/login", (req, res) => {
   }
 });
 
-routerAuth.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  const user = await managerUser.getUserByEmail(email);
-
+routerAuth.post("/login", passport.authenticate('login'), async (req, res) => {
   try {
-    //if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
-    if (email === user.email && validatePassword(password, user.password)) {
-      // if user is logged in
+    if (!req.user) {
+      res.status(401).send({status: "error", message: "User not found"})
 
-      req.session.login = true;
-      const name = user.name;
-      res.redirect("../api/products?name=" + name);
-      //res.redirect("../api/products");
-    } else {
-      // if user is not logged in
-      res.render("auth/login");
+    } req.session.user = {
+      name: req.user.name,
+      email: req.user.email,
+
     }
-  } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
+    res.status(200).send({status: "success", payload:req.user, message: "User logged in successfully"})
+    }
+    catch (e) {
+      console.log(e);
+      res.status(500).send({status: "error", message: "Internal Server Error"})
+    }
 });
 
 routerAuth.get("/logout", (req, res) => {
