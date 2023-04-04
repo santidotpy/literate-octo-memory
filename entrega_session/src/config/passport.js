@@ -1,5 +1,6 @@
 import local from "passport-local";
 import passport from "passport";
+import gitHubStrategy from "passport-github2";
 import { managerUser } from "../routes/auth.routes.js";
 import { createHash, validatePassword } from "../utils/bcrypt.js";
 
@@ -48,6 +49,30 @@ const initializePassport = (passport) => {
     }
   };
 
+  const gitHubAuthenticate = async (
+    accessToken,
+    refreshToken,
+    profile,
+    done
+  ) => {
+    try {
+      console.log(accessToken);
+      const userFound = await managerUser.getUserByEmail(profile._json.email);
+      if (userFound) {
+        return done(null, userFound);
+      }
+      const userCreated = await managerUser.addElements([
+        {
+          name: profile._json.name,
+          email: profile._json.email,
+          password: " ",
+        },
+      ]);
+      return done(null, userCreated);
+    } catch (error) {
+      return done(error);
+    }
+  };
   passport.use(
     "register",
     new LocalStrategy(
@@ -63,6 +88,18 @@ const initializePassport = (passport) => {
   passport.deserializeUser(async (id, done) => {
     return done(null, await managerUser.getElementById(id));
   });
+
+  passport.use(
+    "github",
+    new gitHubStrategy(
+      {
+        clientID: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: "http://localhost:3000/auth/github/callback",
+      },
+      gitHubAuthenticate
+    )
+  );
 };
 
 export default initializePassport;

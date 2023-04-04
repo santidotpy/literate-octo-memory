@@ -16,6 +16,7 @@ import initializePassport from "./config/passport.js";
 import routerProd from "./routes/products.routes.js";
 import routerCart from "./routes/carts.routes.js";
 import routerAuth from "./routes/auth.routes.js";
+import routerGH from "./routes/github.routes.js";
 
 // inicializaciones
 const app = express();
@@ -82,3 +83,4 @@ app.get("/", (req, res) => {
 app.use("/api", routerProd);
 app.use("/api", routerCart);
 app.use("/auth", routerAuth);
+app.use("/auth", routerGH);
