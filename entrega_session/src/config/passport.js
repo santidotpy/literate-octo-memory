@@ -31,6 +31,7 @@ const initializePassport = (passport) => {
     try {
       const user = await managerUser.getUserByEmail(mail);
       if (user) {
+        console.log("User already exists");
         return done(null, false);
       }
       const passwordHash = createHash(password);
@@ -76,7 +77,7 @@ const initializePassport = (passport) => {
   passport.use(
     "register",
     new LocalStrategy(
-      { usernameField: "email", passReqToCallback: true },
+      { passReqToCallback: true, usernameField: 'email' },
       registerUser
     )
   );
@@ -84,10 +85,6 @@ const initializePassport = (passport) => {
     "login",
     new LocalStrategy({ usernameField: "email" }, authenticateUser)
   );
-  passport.serializeUser((user, done) => done(null, user._id));
-  passport.deserializeUser(async (id, done) => {
-    return done(null, await managerUser.getElementById(id));
-  });
 
   passport.use(
     "github",
@@ -100,6 +97,23 @@ const initializePassport = (passport) => {
       gitHubAuthenticate
     )
   );
+
+  //Inicializar la session del user
+  passport.serializeUser((user, done) => {
+    console.log(user);
+    //check is user is an array
+    if (Array.isArray(user)) {
+      done(null, user[0]._id);
+    } else {
+      done(null, user._id);
+    }  
+  });
+
+  //Eliminar la session del user
+  passport.deserializeUser(async (id, done) => {
+    const user = managerUser.getElementById(id);
+    done(null, user);
+  });
 };
 
 export default initializePassport;
