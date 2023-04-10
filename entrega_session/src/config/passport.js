@@ -13,7 +13,7 @@ const initializePassport = (passport) => {
 
       if (!user) {
         //Usuario no encontrado
-        return done(null, false);
+        return done(null, false, { message: "User not found" });
       }
       if (validatePassword(password, user.password)) {
         //Usuario y contraseña validos
@@ -43,7 +43,7 @@ const initializePassport = (passport) => {
           password: passwordHash,
         },
       ]);
-      console.log(userCreated);
+      //console.log(userCreated);
       return done(null, userCreated);
     } catch (error) {
       return done(error);
@@ -57,7 +57,7 @@ const initializePassport = (passport) => {
     done
   ) => {
     try {
-      console.log(accessToken);
+      //console.log(accessToken);
       const userFound = await managerUser.getUserByEmail(profile._json.email);
       if (userFound) {
         return done(null, userFound);
