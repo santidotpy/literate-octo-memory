@@ -22,10 +22,10 @@ routerAuth.get("/login", (req, res) => {
   }
 });
 
-routerAuth.post("/login", passport.authenticate('login'), async (req, res) => {
+routerAuth.post("/login", passport.authenticate('login', { failureRedirect: '../auth/signup', failureMessage: true }), async (req, res) => {
   try {
     if (!req.user) {
-      res.status(401).send({status: "error", message: "User not found"})
+      res.status(401).send({status: "error", message: req.session.messages[0] || "User not found"})
 
     } req.session.user = {
       name: req.user.name,
