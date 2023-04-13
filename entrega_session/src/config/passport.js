@@ -1,12 +1,25 @@
 import local from "passport-local";
 import passport from "passport";
+import jwt from "passport-jwt";
 import gitHubStrategy from "passport-github2";
 import { managerUser } from "../routes/auth.routes.js";
 import { createHash, validatePassword } from "../utils/bcrypt.js";
+import { generateToken } from "../utils/jwt.js";
+import * as mid from "../middlewares/index.js";
 
 const LocalStrategy = local.Strategy;
+const JWTSrategy = jwt.Strategy;
+const ExtractJWT = jwt.ExtractJwt;
 
 const initializePassport = (passport) => {
+  const cookieExtractor = (req) => {
+    let token = null;
+    if (req && req.cookies) {
+      token = req.cookies["jwt"];
+    }
+    return token;
+  };
+
   const authenticateUser = async (mail, password, done) => {
     try {
       const user = await managerUser.getUserByEmail(mail);
@@ -17,6 +30,9 @@ const initializePassport = (passport) => {
       }
       if (validatePassword(password, user.password)) {
         //Usuario y contraseña validos
+        const token = generateToken({ user });
+        console.log(token);
+        // const token = generateToken(user.toJSON()); // dos maneras de hacerlo
         return done(null, user);
       }
 
@@ -44,6 +60,7 @@ const initializePassport = (passport) => {
         },
       ]);
       //console.log(userCreated);
+      const token = generateToken({userCreated});
       return done(null, userCreated);
     } catch (error) {
       return done(error);
@@ -77,7 +94,7 @@ const initializePassport = (passport) => {
   passport.use(
     "register",
     new LocalStrategy(
-      { passReqToCallback: true, usernameField: 'email' },
+      { passReqToCallback: true, usernameField: "email" },
       registerUser
     )
   );
@@ -98,15 +115,36 @@ const initializePassport = (passport) => {
     )
   );
 
+  passport.use(
+    new JWTSrategy(
+      {
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey: process.env.PRIVATE_KEY_JWT,
+      },
+      async (jwtPayload, done) => {
+        try {
+          // const user = await managerUser.getUserByEmail(jwtPayload.mail);
+          // if (user) {
+          //   return done(null, user);
+          // }
+          // return done(null, false);
+          return done(null, jwtPayload);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
+
   //Inicializar la session del user
   passport.serializeUser((user, done) => {
-    console.log(user);
+    //console.log(user);
     //check is user is an array
     if (Array.isArray(user)) {
       done(null, user[0]._id);
     } else {
       done(null, user._id);
-    }  
+    }
   });
 
   //Eliminar la session del user
