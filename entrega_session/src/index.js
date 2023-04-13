@@ -26,7 +26,7 @@ app.set("port", process.env.PORT || 5000);
 app.use(express.json());
 
 // COOKIES
-app.use(cookieParser(process.env.SIGNED_COOKIE));
+app.use(cookieParser(process.env.PRIVATE_KEY_JWT));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
