@@ -7,6 +7,11 @@ const schema = new Schema({
   email: { type: String, required: true, max: 254, unique: true },
   password: { type: String, required: true },
   isadmin: { type: Boolean, required: false, max: 10, default: false },
+//   cart_id: {
+//     type: Schema.Types.ObjectId,
+//     ref: 'carts',
+//     required: true
+// },
 });
 
 export class UserMongo extends mongoManager {
