@@ -3,6 +3,7 @@ import passport from "passport";
 import jwt from "passport-jwt";
 import gitHubStrategy from "passport-github2";
 import { managerUser } from "../routes/auth.routes.js";
+import { CartMongo } from "../dao/MongoDB/models/Cart.js";
 import { createHash, validatePassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
 import * as mid from "../middlewares/index.js";
@@ -10,6 +11,8 @@ import * as mid from "../middlewares/index.js";
 const LocalStrategy = local.Strategy;
 const JWTSrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
+
+const managerCart = new CartMongo();
 
 const initializePassport = (passport) => {
   const cookieExtractor = (req) => {
@@ -31,7 +34,7 @@ const initializePassport = (passport) => {
       if (validatePassword(password, user.password)) {
         //Usuario y contraseña validos
         const token = generateToken({ user });
-        console.log(token);
+        console.log({ token });
         // const token = generateToken(user.toJSON()); // dos maneras de hacerlo
         return done(null, user);
       }
@@ -43,7 +46,13 @@ const initializePassport = (passport) => {
   };
 
   const registerUser = async (req, mail, password, done) => {
-    const { name, email } = req.body;
+    //const { name, email } = req.body;
+    const cart = await managerCart.addElements();
+    const id_cart = cart[0]._id.toString();
+
+    const { first_name, last_name, email, age } = req.body;
+    let { isadmin } = req.body;
+    isadmin = isadmin ? isadmin : false;
     try {
       const user = await managerUser.getUserByEmail(mail);
       if (user) {
@@ -54,13 +63,17 @@ const initializePassport = (passport) => {
 
       const userCreated = await managerUser.addElements([
         {
-          name,
+          first_name,
+          last_name,
           email,
           password: passwordHash,
+          age,
+          isadmin,
+          id_cart,
         },
       ]);
       //console.log(userCreated);
-      const token = generateToken({userCreated});
+      const token = generateToken({ userCreated });
       return done(null, userCreated);
     } catch (error) {
       return done(error);
@@ -122,13 +135,15 @@ const initializePassport = (passport) => {
         secretOrKey: process.env.PRIVATE_KEY_JWT,
       },
       async (jwtPayload, done) => {
+        console.log(jwtPayload);
         try {
-          // const user = await managerUser.getUserByEmail(jwtPayload.mail);
-          // if (user) {
-          //   return done(null, user);
-          // }
-          // return done(null, false);
-          return done(null, jwtPayload);
+          const user = await managerUser.getElementById(jwtPayload._id);
+          console.log(user);
+          if (user) {
+            return done(null, user);
+          }
+          return done(null, false);
+          //return done(null, jwtPayload);
         } catch (error) {
           return done(error);
         }
