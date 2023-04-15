@@ -3,15 +3,37 @@ import { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 
 const schema = new Schema({
-  name: { type: String, required: true, max: 70 },
-  email: { type: String, required: true, max: 254, unique: true },
-  password: { type: String, required: true },
-  isadmin: { type: Boolean, required: false, max: 10, default: false },
-//   cart_id: {
-//     type: Schema.Types.ObjectId,
-//     ref: 'carts',
-//     required: true
-// },
+  first_name: {
+    type: String,
+    required: true,
+  },
+  last_name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    unique: true,
+    index: true,
+  },
+  age: {
+    type: Number,
+    required: true,
+  },
+  isadmin: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  id_cart: {
+    type: Schema.Types.ObjectId,
+    ref: "carts",
+    required: true,
+  },
 });
 
 export class UserMongo extends mongoManager {
