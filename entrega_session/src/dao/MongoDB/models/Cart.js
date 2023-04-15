@@ -8,7 +8,10 @@ const schema = {
         type: Schema.Types.ObjectId,
         ref: "products",
       },
-      quantity: Number,
+      quantity: {
+        type: Number,
+        required: true,
+      },
     },
   ],
 };
