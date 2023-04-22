@@ -1,2 +1,12 @@
 # literate-octo-memory
-prueba login
+
+#### 💻 Installation
+ ```sh
+npm i
+```
+ 
+ 
+#### Run server
+ ```sh
+npm run dev
+```
