@@ -6,7 +6,6 @@ import { managerUser } from "../routes/auth.routes.js";
 import { CartMongo } from "../dao/MongoDB/models/Cart.js";
 import { createHash, validatePassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
-import * as mid from "../middlewares/index.js";
 
 const LocalStrategy = local.Strategy;
 const JWTSrategy = jwt.Strategy;
