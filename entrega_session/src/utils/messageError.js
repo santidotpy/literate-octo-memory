@@ -12,7 +12,8 @@ export const passportError = (strategy) => {
         //return done(null, false, { message: "User not found" }); //Retorno el error
         return res
           .status(401)
-          .send({ error: info.messages ? info.messages : info.toString() }); //Si existe una propiedad messages en info, la envio sino envio pasado a String el objeto info
+          .send({ error: info ? info.message : "User not found" }); //Si existe una propiedad message en info, la envio sino envio un mensaje por defecto
+          //.send({ error: info.messages ? info.messages : info.toString() }); //Si existe una propiedad messages en info, la envio sino envio pasado a String el objeto info
       }
 
       req.user = user;
@@ -28,7 +29,7 @@ export const authorization = () => {
       return res.status(401).send({ error: "Unauthorized user" });
     }
     // console.log(req.user.user.isadmin); //Acceso a las propiedades del user en JWT
-    if (!req.user.user.isadmin) {
+    if (!req.user.isadmin) {
       return res
         .status(403)
         .send({ error: "You do not have permission to access" });
