@@ -2,7 +2,7 @@ import local from "passport-local";
 import passport from "passport";
 import jwt from "passport-jwt";
 import gitHubStrategy from "passport-github2";
-import { managerUser } from "../routes/auth.routes.js";
+import { managerUser } from "../controllers/auth.controller.js";
 import { CartMongo } from "../dao/MongoDB/models/Cart.js";
 import { createHash, validatePassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
@@ -128,23 +128,23 @@ const initializePassport = (passport) => {
   );
 
   passport.use(
+    "jwt",
     new JWTSrategy(
       {
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
         secretOrKey: process.env.PRIVATE_KEY_JWT,
       },
       async (jwtPayload, done) => {
-        console.log(jwtPayload);
         try {
-          const user = await managerUser.getElementById(jwtPayload._id);
-          console.log(user);
-          if (user) {
-            return done(null, user);
+          const user = await managerUser.getElementById(jwtPayload.user.id);
+          if (!user) {
+            // Si no existe el usuario
+            return done(null, false);
           }
-          return done(null, false);
-          //return done(null, jwtPayload);
+
+          return done(null, user);
         } catch (error) {
-          return done(error);
+          return done(error, false);
         }
       }
     )
