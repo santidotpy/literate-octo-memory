@@ -1,15 +1,13 @@
 import local from "passport-local";
 import passport from "passport";
-import jwt from "passport-jwt";
 import gitHubStrategy from "passport-github2";
+import { strategyJWT } from "./strategies/jwtStrategy.js";
 import { managerUser } from "../controllers/auth.controller.js";
 import { CartMongo } from "../dao/MongoDB/models/Cart.js";
 import { createHash, validatePassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
 
 const LocalStrategy = local.Strategy;
-const JWTSrategy = jwt.Strategy;
-const ExtractJWT = jwt.ExtractJwt;
 
 const managerCart = new CartMongo();
 
@@ -71,7 +69,6 @@ const initializePassport = (passport) => {
           id_cart,
         },
       ]);
-      //console.log(userCreated);
       const token = generateToken({ userCreated });
       return done(null, userCreated);
     } catch (error) {
@@ -86,7 +83,6 @@ const initializePassport = (passport) => {
     done
   ) => {
     try {
-      //console.log(accessToken);
       const userFound = await managerUser.getUserByEmail(profile._json.email);
       if (userFound) {
         return done(null, userFound);
@@ -127,32 +123,10 @@ const initializePassport = (passport) => {
     )
   );
 
-  passport.use(
-    "jwt",
-    new JWTSrategy(
-      {
-        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: process.env.PRIVATE_KEY_JWT,
-      },
-      async (jwtPayload, done) => {
-        try {
-          const user = await managerUser.getElementById(jwtPayload.user.id);
-          if (!user) {
-            // Si no existe el usuario
-            return done(null, false);
-          }
-
-          return done(null, user);
-        } catch (error) {
-          return done(error, false);
-        }
-      }
-    )
-  );
+  passport.use("jwt", strategyJWT);
 
   //Inicializar la session del user
   passport.serializeUser((user, done) => {
-    //console.log(user);
     //check is user is an array
     if (Array.isArray(user)) {
       done(null, user[0]._id);
