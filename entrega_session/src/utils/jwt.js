@@ -14,7 +14,7 @@ export const decodeToken = (token) => {
 
 export const getToken = (req) => {
   const token = req.headers.authorization;
-  return token;
+  return token.replace("Bearer ", ""); // only return the token 
 };
 
 export const validateToken = (req, res, next) => {
