@@ -37,3 +37,13 @@ export const authorization = () => {
     next();
   };
 };
+
+export const authorizationUser = () => { // Middleware para validar que el usuario este logueado
+  return async (req, res, next) => {
+    if (!req.user) {
+      //No hay un usuario
+      return res.status(401).send({ error: "Unauthorized user" });
+    }
+    next();
+  };
+}
