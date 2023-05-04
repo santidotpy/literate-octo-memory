@@ -3,13 +3,11 @@ import passport from "passport";
 import gitHubStrategy from "passport-github2";
 import { strategyJWT } from "./strategies/jwtStrategy.js";
 import { managerUser } from "../controllers/auth.controller.js";
-import { CartMongo } from "../dao/MongoDB/models/Cart.js";
+import { createCart } from "../controllers/cart.controller.js";
 import { createHash, validatePassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
 
 const LocalStrategy = local.Strategy;
-
-const managerCart = new CartMongo();
 
 const initializePassport = (passport) => {
   const cookieExtractor = (req) => {
@@ -44,7 +42,7 @@ const initializePassport = (passport) => {
 
   const registerUser = async (req, mail, password, done) => {
     //const { name, email } = req.body;
-    const cart = await managerCart.addElements();
+    const cart = await createCart();
     const id_cart = cart[0]._id.toString();
 
     const { first_name, last_name, email, age } = req.body;
