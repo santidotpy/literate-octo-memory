@@ -12,14 +12,18 @@ import MongoStore from "connect-mongo";
 import session from "express-session";
 import passport from "passport";
 import initializePassport from "./config/passport.js";
+import { MessageMongo } from "./dao/MongoDB/models/Message.js";
 
 import routerProd from "./routes/products.routes.js";
 import routerCart from "./routes/carts.routes.js";
 import routerAuth from "./routes/auth.routes.js";
 import routerGH from "./routes/github.routes.js";
+import routerMsg from "./routes/msg.routes.js";
 
 // inicializaciones
 const app = express();
+const managerMessage = new MessageMongo();
+
 //const managerProduct = new ProductMongo();
 
 app.set("port", process.env.PORT || 5000);
@@ -72,7 +76,33 @@ const io = new Server(server);
 
 io.on("connection", async (socket) => {
   console.log("New connection:", socket.id);
+
+socket.on("message", async (info) => {
+  // const data = await managerMessage();
+  // const managerMessage = new data.ManagerMessageMongoDB();
+  managerMessage.addElements([info]).then(() => {
+    managerMessage.getElements().then((mensajes) => {
+      console.log(mensajes);
+      socket.emmit("allMessages", mensajes);
+    });
+  });
 });
+
+socket.on("chat-message", async (data) => {
+  // console.log(data);
+  //save to db
+  managerMessage.addElements([
+    { username: data.username, message: data.message, email: data.email },
+  ]);
+  io.sockets.emit("chat-message", data);
+});
+
+socket.on("chat-typing", (data) => {
+  socket.broadcast.emit("chat-typing", data);
+});
+});
+
+
 
 // routes
 
@@ -80,6 +110,7 @@ app.get("/", (req, res) => {
   res.redirect("/auth/login");
 });
 
+app.use(routerMsg);
 app.use("/api", routerProd);
 app.use("/api", routerCart);
 app.use("/auth", routerAuth);
