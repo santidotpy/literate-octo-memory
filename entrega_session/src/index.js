@@ -77,32 +77,30 @@ const io = new Server(server);
 io.on("connection", async (socket) => {
   console.log("New connection:", socket.id);
 
-socket.on("message", async (info) => {
-  // const data = await managerMessage();
-  // const managerMessage = new data.ManagerMessageMongoDB();
-  managerMessage.addElements([info]).then(() => {
-    managerMessage.getElements().then((mensajes) => {
-      console.log(mensajes);
-      socket.emmit("allMessages", mensajes);
+  socket.on("message", async (info) => {
+    // const data = await managerMessage();
+    // const managerMessage = new data.ManagerMessageMongoDB();
+    managerMessage.addElements([info]).then(() => {
+      managerMessage.getElements().then((mensajes) => {
+        console.log(mensajes);
+        socket.emmit("allMessages", mensajes);
+      });
     });
   });
-});
 
-socket.on("chat-message", async (data) => {
-  // console.log(data);
-  //save to db
-  managerMessage.addElements([
-    { username: data.username, message: data.message, email: data.email },
-  ]);
-  io.sockets.emit("chat-message", data);
-});
+  socket.on("chat-message", async (data) => {
+    // console.log(data);
+    //save to db
+    managerMessage.addElements([
+      { username: data.username, message: data.message, email: data.email },
+    ]);
+    io.sockets.emit("chat-message", data);
+  });
 
-socket.on("chat-typing", (data) => {
-  socket.broadcast.emit("chat-typing", data);
+  socket.on("chat-typing", (data) => {
+    socket.broadcast.emit("chat-typing", data);
+  });
 });
-});
-
-
 
 // routes
 
@@ -117,5 +115,4 @@ app.use("/auth", routerAuth);
 app.use("/auth", routerGH);
 app.use("*", (req, res) => {
   res.status(404).send({ status: "error", message: "Not found" });
-} 
-);
+});
