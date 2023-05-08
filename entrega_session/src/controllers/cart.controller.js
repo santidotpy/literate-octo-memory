@@ -3,6 +3,7 @@ import { TicketMongo } from "../dao/MongoDB/models/Ticket.js";
 import { getToken, decodeToken } from "../utils/jwt.js";
 import { checkStock, getPrice, buyProducts } from "./products.controller.js";
 import { getUserEmail } from "./auth.controller.js";
+import { sendEmail } from "../services/email.service.js";
 
 const managerCart = new CartMongo();
 const managerTicket = new TicketMongo();
@@ -174,7 +175,10 @@ export const checkout = async (req, res) => {
     const totalAmount = prices.reduce((acc, price) => acc + price, 0);
 
     // Buy the products
-    await buyProducts(cart.products);
+    const successfulPurchase = await buyProducts(cart.products);
+    if (successfulPurchase) {
+      sendEmail(email, totalAmount); // notify user
+    }
 
     // remove bought products from cart
     await managerCart.deleteProductsCart(id);
