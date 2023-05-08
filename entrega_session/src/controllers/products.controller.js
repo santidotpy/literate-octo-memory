@@ -106,3 +106,39 @@ export const updateProduct = async (req, res) => {
     });
   }
 };
+
+// check stock
+export const checkStock = async (id, qty) => {
+  try {
+    const product = await managerProduct.getElementById(id);
+    if (product.stock >= qty) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export const getPrice = async (prod_id, qty) => {
+  try {
+    const product = await managerProduct.getElementById(prod_id);
+    const price = product.price * qty;
+    return price;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export const buyProducts = async (productsList) => {
+  try {
+    for (const product of productsList) {
+      const productStock = await managerProduct.getElementById(product.id_prod);
+      const newStock = productStock.stock - product.quantity;
+      await managerProduct.updateElement(product.id_prod, { stock: newStock });
+    }
+    return true;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
