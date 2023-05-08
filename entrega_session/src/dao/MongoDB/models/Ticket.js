@@ -16,4 +16,14 @@ export class TicketMongo extends mongoManager {
   constructor() {
     super(process.env.mongoUrl, "tickets", schema);
   }
+
+  async addTicket(purchase_datetime, amount, purchaser) {
+    super.connect();
+    const ticket = new this.model({
+      purchase_datetime,
+      amount,
+      purchaser,
+    });
+    return await ticket.save();
+  }
 }
