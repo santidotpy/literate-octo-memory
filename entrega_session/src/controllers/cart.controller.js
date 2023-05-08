@@ -1,6 +1,11 @@
 import { CartMongo } from "../dao/MongoDB/models/Cart.js";
+import { TicketMongo } from "../dao/MongoDB/models/Ticket.js";
+import { getToken, decodeToken } from "../utils/jwt.js";
+import { checkStock, getPrice, buyProducts } from "./products.controller.js";
+import { getUserEmail } from "./auth.controller.js";
 
 const managerCart = new CartMongo();
+const managerTicket = new TicketMongo();
 
 export const createCart = async (req, res) => {
   try {
@@ -50,10 +55,14 @@ export const getCartContent = async (req, res) => {
 
 export const addProductToCart = async (req, res) => {
   const { id_cart } = req.query;
-  const { id_prod, cant } = req.body;
+  const { id_prod, quantity } = req.body;
 
   try {
-    const respuesta = await managerCart.addProduct(id_cart, id_prod, cant);
+    const respuesta = await managerCart.addProductCart(
+      id_cart,
+      id_prod,
+      quantity
+    );
 
     return res.status(200).json(respuesta);
   } catch (error) {
@@ -118,6 +127,76 @@ export const deleteProductCart = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: error.message,
+    });
+  }
+};
+
+export const getTickets = async (req, res) => {
+  try {
+    const tickets = await managerTicket.getElements();
+    res.status(200).json(tickets);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+    console.log(error.message);
+  }
+};
+
+export const checkout = async (req, res) => {
+  try {
+    const token = getToken(req);
+    const userId = decodeToken(token).payload.user.id;
+    const email = await getUserEmail(userId);
+
+    const { id } = req.query;
+    let cart = await managerCart.getElementById(id);
+
+    let outOfStockProducts = [];
+
+    // Check if all products are in stock
+    await Promise.all(
+      cart.products.map(async (prod) => {
+        const stock = await checkStock(prod.id_prod, prod.quantity);
+        if (!stock) {
+          console.log(`Stock insuficiente de ${prod.id_prod}`);
+          await managerCart.deleteProductFromCart(id, prod.id_prod);
+          outOfStockProducts.push(prod);
+        }
+      })
+    );
+
+    // Calculate total price
+    const pricePromises = cart.products.map((prod) =>
+      getPrice(prod.id_prod, prod.quantity)
+    );
+    const prices = await Promise.all(pricePromises);
+    const totalAmount = prices.reduce((acc, price) => acc + price, 0);
+
+    // Buy the products
+    await buyProducts(cart.products);
+
+    // remove bought products from cart
+    await managerCart.deleteProductsCart(id);
+    // add products with no stock to cart
+    await Promise.all(
+      outOfStockProducts.map(async (prod) => {
+        await managerCart.addProductCart(id, prod.id_prod, prod.quantity);
+      })
+    );
+    // Add ticket to database
+    const date = new Date();
+    await managerTicket.addTicket(date, totalAmount, email);
+    cart = await managerCart.getElementById(id);
+
+    res.status(200).json({
+      message: "Successful purchase",
+      productsOutOfStock: cart,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Error occurred while processing the request",
     });
   }
 };
