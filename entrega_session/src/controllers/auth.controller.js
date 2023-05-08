@@ -68,3 +68,9 @@ const generateToken = (userId) => {
 const setCookie = (res, token) => {
   res.cookie("jwt", token, { httpOnly: true });
 };
+
+
+export const getUserEmail = async (userId)=> {
+  const user = await managerUser.getElementById(userId);
+  return user.email;
+}
