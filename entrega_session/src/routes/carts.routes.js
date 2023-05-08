@@ -12,8 +12,8 @@ import {
   emptyCart,
   updateProductCart,
   deleteProductCart,
+  checkout,
 } from "../controllers/cart.controller.js";
-import { decodeToken, getToken } from "../utils/jwt.js";
 
 const routerCart = Router();
 
@@ -61,6 +61,14 @@ routerCart.delete(
   passportError("jwt"),
   authorizationUser(),
   deleteProductCart
+);
+
+// purchase
+routerCart.post(
+  "/checkout",
+  passportError("jwt"),
+  authorizationUser(),
+  checkout
 );
 
 export default routerCart;
