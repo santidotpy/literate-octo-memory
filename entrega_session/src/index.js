@@ -19,6 +19,7 @@ import routerCart from "./routes/carts.routes.js";
 import routerAuth from "./routes/auth.routes.js";
 import routerGH from "./routes/github.routes.js";
 import routerMsg from "./routes/msg.routes.js";
+import routerTicket from "./routes/tickets.routes.js";
 
 // inicializaciones
 const app = express();
@@ -111,6 +112,7 @@ app.get("/", (req, res) => {
 app.use(routerMsg);
 app.use("/api", routerProd);
 app.use("/api", routerCart);
+app.use("/tickets", routerTicket);
 app.use("/auth", routerAuth);
 app.use("/auth", routerGH);
 app.use("*", (req, res) => {
