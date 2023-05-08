@@ -41,6 +41,16 @@ export class CartMongo extends mongoManager {
     return true;
   }
 
+  async deleteProductFromCart(id, idProd) {
+    const updatedCart = await this.model.findOneAndUpdate(
+      { _id: id },
+      { $pull: { products: { id_prod: idProd } } },
+      { new: true }
+    );
+
+    return !!updatedCart;
+  }
+
   async deleteProductsCart(id) {
     super.connect();
     const carrito = await this.model.findById(id);
