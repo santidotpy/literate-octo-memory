@@ -142,3 +142,35 @@ export const buyProducts = async (productsList) => {
     console.log(error.message);
   }
 };
+
+
+export const getProductData = async (productsList) => {
+  try {
+    const products = [];
+    for (const product of productsList) {
+      const productInfo = await managerProduct.getElementById(product.id_prod);
+      productInfo.quantity = product.quantity;
+      products.push(productInfo);
+    }
+    return products;
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+
+// const info = [
+//   {
+//     id_prod: "64532269974dca345b10207a",
+//     quantity: 2,
+//     _id: "645af4e1726f135ae40baa3e"
+//   },
+//   {
+//     id_prod: "645886aa8eb90e647e6f20b3",
+//     quantity: 1,
+//     _id: "645af594726f135ae40baa4a"
+//   }
+// ]
+// const data = await getProductInfo(info)
+
+// console.log(data)

@@ -11,14 +11,12 @@ const transporter = nodeMailer.createTransport({
   },
 });
 
-export const sendEmail = async (email, total) => {
+export const sendEmail = async (email, receipt) => {
   const mailOptions = {
     from: process.env.APP_MAIL_SENDER,
     to: email,
-    subject: "Thank you for your purchase",
-    text: "Your purchase was successful",
-    html: ` <h3>Your purchase was successful!</h3>
-            <h4>Total: $${total}</h4>`,
+    subject: "Your Purchase Receipt",
+    text: receipt,
   };
 
   try {

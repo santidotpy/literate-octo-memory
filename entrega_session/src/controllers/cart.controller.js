@@ -1,8 +1,14 @@
 import { CartMongo } from "../dao/MongoDB/models/Cart.js";
 import { TicketMongo } from "../dao/MongoDB/models/Ticket.js";
 import { getToken, decodeToken } from "../utils/jwt.js";
-import { checkStock, getPrice, buyProducts } from "./products.controller.js";
+import {
+  checkStock,
+  getPrice,
+  buyProducts,
+  getProductData,
+} from "./products.controller.js";
 import { getUserEmail } from "./auth.controller.js";
+import { generateReceipt } from "../services/receipt.service.js";
 import { sendEmail } from "../services/email.service.js";
 
 const managerCart = new CartMongo();
@@ -132,6 +138,21 @@ export const deleteProductCart = async (req, res) => {
   }
 };
 
+export const deleteProductFromCart = async (req, res) => {
+  try {
+    const { id, id_prod } = req.query;
+
+    await managerCart.deleteProductFromCart(id, id_prod);
+    const cart = await managerCart.getElementById(id);
+
+    return res.status(200).json(cart);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 export const getTickets = async (req, res) => {
   try {
     const tickets = await managerTicket.getElements();
@@ -159,15 +180,31 @@ export const checkout = async (req, res) => {
     await Promise.all(
       cart.products.map(async (prod) => {
         const stock = await checkStock(prod.id_prod, prod.quantity);
+        console.log(stock);
         if (!stock) {
-          console.log(`Stock insuficiente de ${prod.id_prod}`);
+          console.log(`Product ${prod.id_prod} out of stock`);
           await managerCart.deleteProductFromCart(id, prod.id_prod);
           outOfStockProducts.push(prod);
         }
       })
     );
 
+    // en el caso de que tener solo un producto en el carrito
+    // y que ese este fuera de stock notifico al usuario
+    cart = await managerCart.getElementById(id);
+    if (outOfStockProducts.length > 0 && cart.products.length > 0) {
+      return res.status(200).json({
+        message: "Some products are out of stock",
+        outOfStockProducts,
+      });
+    } else if (cart.products.length == 0) {
+      return res.status(200).json({
+        message: "Your cart is empty",
+      });
+    }
+
     // Calculate total price
+    cart = await managerCart.getElementById(id);
     const pricePromises = cart.products.map((prod) =>
       getPrice(prod.id_prod, prod.quantity)
     );
@@ -175,9 +212,14 @@ export const checkout = async (req, res) => {
     const totalAmount = prices.reduce((acc, price) => acc + price, 0);
 
     // Buy the products
+    //console.log(cart.products)
     const successfulPurchase = await buyProducts(cart.products);
     if (successfulPurchase) {
-      sendEmail(email, totalAmount); // notify user
+      const productData = await getProductData(cart.products);
+      const receipt = generateReceipt(productData, totalAmount, email);
+      console.log("Successful purchase");
+      //console.log(receipt);
+      sendEmail(email, receipt); // notify user
     }
 
     // remove bought products from cart
@@ -194,7 +236,8 @@ export const checkout = async (req, res) => {
     cart = await managerCart.getElementById(id);
 
     res.status(200).json({
-      message: "Successful purchase",
+      message:
+        "Thank you for your purchase. An email has been sent to you with your receipt.",
       productsOutOfStock: cart,
     });
   } catch (err) {

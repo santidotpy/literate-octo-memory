@@ -12,6 +12,7 @@ import {
   emptyCart,
   updateProductCart,
   deleteProductCart,
+  deleteProductFromCart,
   checkout,
 } from "../controllers/cart.controller.js";
 
@@ -61,6 +62,13 @@ routerCart.delete(
   passportError("jwt"),
   authorizationUser(),
   deleteProductCart
+);
+
+routerCart.delete(
+  "/cart/product",
+  passportError("jwt"),
+  authorizationUser(),
+  deleteProductFromCart
 );
 
 // purchase
