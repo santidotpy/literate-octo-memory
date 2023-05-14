@@ -2,4 +2,3 @@ node_modules
 package-lock.json
 .env
 bla.txt
-/entrega_session/src/middlewares
