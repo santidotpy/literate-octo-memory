@@ -1,4 +1,5 @@
 import { ProductMongo } from "../dao/MongoDB/models/Product.js";
+import { faker } from "@faker-js/faker";
 
 const managerProduct = new ProductMongo();
 
@@ -21,6 +22,21 @@ export const getProducts = async (req, res) => {
       totalPages: products.totalPages,
       welcome,
     });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// obtener productos en formato json
+export const getProductsJSON = async (req, res) => {
+  const page = req.query.page || 1;
+  const limit = req.query.limit || 8;
+  const sort = req.query.sort || "asc";
+  try {
+    const products = await managerProduct.getElements(page, limit, sort);
+    res.status(200).json(products);
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -143,7 +159,6 @@ export const buyProducts = async (productsList) => {
   }
 };
 
-
 export const getProductData = async (productsList) => {
   try {
     const products = [];
@@ -156,8 +171,41 @@ export const getProductData = async (productsList) => {
   } catch (error) {
     console.log(error.message);
   }
-}
+};
 
+// mocking de 50 productos con faker
+export const mockingProducts = async (req, res) => {
+  const products = [];
+  try {
+    for (let i = 0; i < 50; i++) {
+      const productName = faker.commerce.productName();
+      const description = faker.commerce.productDescription();
+      const code = faker.number.int();
+      const price = parseFloat(faker.commerce.price());
+      const thumbnail = faker.image.url();
+      const stock = faker.number.int({ min: 0, max: 1000 });
+      const status = faker.datatype.boolean();
+      const category = faker.commerce.department();
+
+      products.push({
+        productName,
+        description,
+        code,
+        price,
+        thumbnail,
+        stock,
+        status,
+        category,
+      });
+    }
+
+    const addProducts = await managerProduct.addElements(products);
+
+    res.status(200).json(addProducts);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 // const info = [
 //   {
