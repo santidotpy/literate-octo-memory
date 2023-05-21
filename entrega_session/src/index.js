@@ -5,8 +5,6 @@ import { Server } from "socket.io";
 import __dirname from "./path.js";
 import path, { format } from "path";
 
-//import { ProductMongo } from "./dao/MongoDB/models/Product.js";
-
 import cookieParser from "cookie-parser";
 import MongoStore from "connect-mongo";
 import session from "express-session";
@@ -20,12 +18,11 @@ import routerAuth from "./routes/auth.routes.js";
 import routerGH from "./routes/github.routes.js";
 import routerMsg from "./routes/msg.routes.js";
 import routerTicket from "./routes/tickets.routes.js";
+import { winstonLogger } from "./utils/logger.js";
 
 // inicializaciones
 const app = express();
 const managerMessage = new MessageMongo();
-
-//const managerProduct = new ProductMongo();
 
 app.set("port", process.env.PORT || 5000);
 app.use(express.json());
@@ -104,6 +101,7 @@ io.on("connection", async (socket) => {
 });
 
 // routes
+app.use(winstonLogger);
 
 app.get("/", (req, res) => {
   res.redirect("/auth/login");
