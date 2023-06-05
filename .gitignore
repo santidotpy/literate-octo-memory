@@ -1,5 +1,5 @@
 node_modules
-package-lock.json
 .env
 bla.txt
 exceptions.log
+entrega_session/src/middlewares/index.js
