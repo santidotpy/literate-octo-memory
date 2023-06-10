@@ -1,0 +1,240 @@
+paths:
+  /api/products:
+    get:
+      summary: List all products
+      description: Get an object containing all products in a paginated way
+      tags:
+        - Products
+      responses:
+        "200":
+          description: List of all products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+        "500":
+          description: Internal Server Error
+    post:
+      summary: Add a new product to the list of products
+      description: Create a new product and add it to the list of products
+      tags:
+        - Products
+      requestBody:
+        description: Product object to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoIDProduct"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "500":
+          description: Internal Server Error
+
+    delete:
+      summary: Delete a product from the list of products
+      description: Delete a product given its id
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: The id of the product to be deleted
+      responses:
+        "200":
+          description: Product successfully deleted
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: "#/components/schemas/Product"
+        "500":
+          description: Internal Server Error
+    put:
+      summary: Update a product from the list of products
+      description: Update a product given its id
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: The id of the product to be updated
+      requestBody:
+        description: Product object to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoIDProduct"
+      responses:
+        "200":
+          description: Product successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "500":
+          description: Internal Server Error
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        docs:
+          type: array
+          description: List of products
+          items:
+            $ref: "#/components/schemas/Product"
+        totalDocs:
+          type: integer
+          format: int32
+          description: Total number of products
+        limit:
+          type: integer
+          format: int32
+          description: Number of products returned per page
+        totalPages:
+          type: integer
+          format: int32
+          description: Total number of pages
+        page:
+          type: integer
+          format: int32
+          description: Current page number
+        pagingCounter:
+          type: integer
+          format: int32
+          description: Current page number
+        hasPrevPage:
+          type: boolean
+          description: A flag indicating if there is a previous page
+        hasNextPage:
+          type: boolean
+          description: A flag indicating if there is a next page
+        prevPage:
+          type: integer
+          format: int32
+          description: Previous page number
+        nextPage:
+          type: integer
+          format: int32
+          description: Next page number
+      example:
+        docs:
+          - id: "647e71de815f987957001c47"
+            productName: "Product 1"
+            description: "Description of product 1"
+            price: 100
+            thumbnail: "https://picsum.photos/200/300"
+            code: 1111
+            stock: 10
+            category: "Category 1"
+            status: true
+          - id: "647e71de815f987957001c48"
+            productName: "Product 2"
+            description: "Description of product 2"
+            price: 200
+            thumbnail: "https://picsum.photos/200/300"
+            code: 2222
+            stock: 20
+            category: "Category 2"
+            status: true
+        totalDocs: 2
+        limit: 8
+        totalPages: 1
+        page: 1
+        pagingCounter: 1
+        hasPrevPage: false
+        hasNextPage: false
+        prevPage: null
+        nextPage: null
+        status: 200
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectId
+          description: A unique identifier assigned to the product
+        productName:
+          type: string
+          description: Title of the product
+        description:
+          type: string
+          description: A brief summary or overview of the product
+        price:
+          type: number
+          format: float
+          description: The price of the product
+        thumbnail:
+          type: string
+          description: A URL pointing to an image that represents the product
+        code:
+          type: integer
+          format: int32
+          description: A specific code used for internal referencing or tracking purposes.
+        stock:
+          type: integer
+          format: int32
+          description: The available quantity or inventory level of the product
+        category:
+          type: string
+          description: The group or type of products to which the item is assigned
+        status:
+          type: boolean
+          description: A flag representing the availability of the product
+
+    NoIDProduct:  # Modified version of the "Product" schema without the "id" property
+      type: object
+      properties:
+        productName:
+          type: string
+          description: Title of the product
+        description:
+          type: string
+          description: A brief summary or overview of the product
+        price:
+          type: number
+          format: float
+          description: The price of the product
+        thumbnail:
+          type: string
+          description: A URL pointing to an image that represents the product
+        code:
+          type: integer
+          format: int32
+          description: A specific code used for internal referencing or tracking purposes.
+        stock:
+          type: integer
+          format: int32
+          description: The available quantity or inventory level of the product
+        category:
+          type: string
+          description: The group or type of products to which the item is assigned
+        status:
+          type: boolean
+          description: A flag representing the availability of the product
+      additionalProperties: false
+    # Error:
+    #   type: object
+    #   properties:
+    #     message:
+    #       type: string
+    #       description: Error message
+    #     code:
+    #       type: integer
+    #       format: int32
+    #       description: Error code

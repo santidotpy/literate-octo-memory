@@ -8,20 +8,22 @@ export const getProducts = async (req, res) => {
   const limit = req.query.limit || 8;
   const sort = req.query.sort || "asc";
   try {
-    const welcome = [];
-    const name = req.query.name;
-    welcome.push({ text: `Welcome back ${name}` });
+    // const welcome = [];
+    // const name = req.query.name;
+    // welcome.push({ text: `Welcome back ${name}` });
     const products = await managerProduct.getElements(page, limit, sort);
-    //res.status(200).json(products);
-    res.render("products/all-products", {
-      // cambiara con el uso del front
-      title: "Products",
-      products: products.docs,
-      pagination: products.pagination,
-      currentPage: products.page,
-      totalPages: products.totalPages,
-      welcome,
-    });
+    res.status(200).json(products);
+
+   
+    // res.render("products/all-products", {
+    //   // cambiara con el uso del front
+    //   title: "Products",
+    //   products: products.docs,
+    //   pagination: products.pagination,
+    //   currentPage: products.page,
+    //   totalPages: products.totalPages,
+    //   welcome,
+    // });
   } catch (error) {
     res.status(500).json({
       message: error.message,
