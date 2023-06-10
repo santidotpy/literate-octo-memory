@@ -9,6 +9,8 @@ import cookieParser from "cookie-parser";
 import MongoStore from "connect-mongo";
 import session from "express-session";
 import passport from "passport";
+import swaggerJSdoc from "swagger-jsdoc";
+import swaggerUI from "swagger-ui-express";
 import initializePassport from "./config/passport.js";
 import { MessageMongo } from "./dao/MongoDB/models/Message.js";
 
@@ -43,6 +45,24 @@ app.use(
     }),
   })
 );
+
+// SWAGGER
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.1",
+    info: {
+      title: "App Documentation",
+      version: "0.5",
+      description: "Documentation for a simple ecommerce",
+      contact: {
+        name: "Santiago",
+      },
+    },
+  },
+  apis: [`${__dirname}/docs/**/*.yaml`],
+};
+const swaggerDocs = swaggerJSdoc(swaggerOptions);
+
 // PASSPORT
 initializePassport(passport);
 app.use(passport.initialize());
@@ -102,6 +122,7 @@ io.on("connection", async (socket) => {
 
 // routes
 app.use(winstonLogger);
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 app.get("/", (req, res) => {
   res.redirect("/auth/login");
