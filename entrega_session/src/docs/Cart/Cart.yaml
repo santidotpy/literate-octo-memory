@@ -1,0 +1,288 @@
+paths:
+  /api/add-to-cart:
+    get:
+      summary: Add a product to the cart
+      description: Add a product to the cart given its id
+      tags:
+        - Cart
+      parameters:
+        - in: query
+          name: id_cart
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: The id of the cart to add the product
+      requestBody:
+        description: Product object to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddToCart"
+      responses:
+        "200":
+          description: Product successfully added to the cart.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "500":
+          description: Internal Server Error
+
+  /api/cart:
+    get:
+      summary: Get a cart given its id
+      description: Get the content of a cart given its id
+      tags:
+        - Cart
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: The id of the cart to get
+      responses:
+        "200":
+          description: Cart successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCartById"
+        "500":
+          description: Internal Server Error
+    delete:
+      summary: Empty a cart
+      description: Remove all products from a cart given its id
+      tags:
+        - Cart
+      parameters:
+        - in: query
+          name: cartId
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: The id of the cart to empty
+      responses:
+        "200":
+          description: Cart successfully emptied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmptyCart"
+        "500":
+          description: Internal Server Error
+
+  /api/cart/product:
+    delete:
+      summary: Remove a product from a cart
+      description: Remove a product from a cart given the cart id and the product id
+      tags:
+        - Cart
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: The id of the cart to remove the product
+        - in: query
+          name: id_prod
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: The id of the product to be removed from the cart
+      responses:
+        "200":
+          description: Product successfully removed from the cart. This will return the cart with the product removed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RemoveFromCart"
+        "500":
+          description: Internal Server Error
+
+  /api/checkout:
+    post:
+      summary: Checkout a cart
+      description: Purchase the content of a cart given its id
+      tags:
+        - Cart
+      parameters:
+        - in: query
+          name: id_cart
+          schema:
+            type: string
+            format: objectId
+          required: true
+          description: The id of the cart to checkout
+      responses:
+        "200":
+          description: Cart successfully checked out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutCart"
+        "500":
+          description: Internal Server Error
+
+  # /tickets/all:
+  #   get:
+  #     summary: Get all tickets
+  #     description: Get a paginated list of all tickets
+  #     tags:
+  #       - Tickets
+  #     responses:
+  #       "200":
+  #         description: Tickets successfully retrieved
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: "#/components/schemas/GetAllTickets"
+  #       "500":
+  #         description: Internal Server Error
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectId
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+        quantity:
+          type: integer
+          format: int32
+      required:
+        - id_cart
+        - id_product
+        - quantity
+      example:
+        id_cart: 647e71de713f987957021c47
+        products:
+          - id_prod:
+              id: 5f9b2a3b9d9b4b0017b0b3a0
+              productName: "Product 1"
+              description: "Description 1"
+              price: 100
+              thumbnail: "https://cdn3.iconfinder.com/data/icons/education-209/64/bus-vehicle-transport-school-128.png"
+              code: 1234
+              stock: 10
+              category: "Category 1"
+              status: true
+        quantity: 1
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectId
+          description: A unique identifier assigned to the product
+        productName:
+          type: string
+          description: Title of the product
+        description:
+          type: string
+          description: A brief summary or overview of the product
+        price:
+          type: number
+          format: float
+          description: The price of the product
+        thumbnail:
+          type: string
+          description: A URL pointing to an image that represents the product
+        code:
+          type: integer
+          format: int32
+          description: A specific code used for internal referencing or tracking purposes.
+        stock:
+          type: integer
+          format: int32
+          description: The available quantity or inventory level of the product
+        category:
+          type: string
+          description: The group or type of products to which the item is assigned
+        status:
+          type: boolean
+          description: A flag representing the availability of the product
+    AddToCart:
+      type: object
+      properties:
+        id_prod:
+          type: string
+          format: objectId
+          description: The id of the product to add
+        quantity:
+          type: integer
+          format: int32
+          description: The quantity of the product to add
+      required:
+        - id_prod
+        - quantity
+      example:
+        id_prod: 5f9b2a3b9d9b4b0017b0b3a0
+        quantity: 1
+    GetCartById:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectId
+          description: The id of the cart to get
+        products:
+          type: array
+      required:
+        - id
+      example:
+        id: 641bd4c158q39db9f82769c5
+        products:
+          - id_prod: 5f9b2a3b9d9b4b0017b0b3a0
+            quantity: 1
+    CheckoutCart:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: "Thank you for your purchase. An email has been sent to you with your receipt"
+    EmptyCart:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: "Cart successfully emptied"
+
+    RemoveFromCart:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectId
+          description: The id of the cart to remove the product
+        products:
+          type: array
+          description: The products in the cart
+      required:
+        - id
+      example:
+        id: 641bd4c158q39db9f82769c5
+        products:
+          - id_prod: 5f9b2a3b9d9b4b0017b0b3a0
+            quantity: 1
+#     Error:
+#       type: object
+#       properties:
+#         message:
+#           type: string
+#       required:
+#         - message
