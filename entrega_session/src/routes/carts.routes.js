@@ -32,7 +32,7 @@ routerCart.get(
   getCartContent
 );
 
-// POST para agregar productos al carrito
+// POST para agregar productos al carrito - deprecado
 routerCart.post(
   "/add-to-cart",
   passportError("jwt"),
@@ -64,6 +64,7 @@ routerCart.delete(
   deleteProductCart
 );
 
+// DELETE para eliminar productos del carrito - cool
 routerCart.delete(
   "/cart/product",
   passportError("jwt"),
