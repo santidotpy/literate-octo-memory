@@ -62,15 +62,16 @@ const validateToken = async (req, res, next) => {
 };
 
 const generateToken = (userId) => {
-  return jwt.sign({ user: { id: userId } }, process.env.PRIVATE_KEY_JWT);
+  return jwt.sign({ user: { id: userId } }, process.env.PRIVATE_KEY_JWT, {
+    expiresIn: "1h",
+  });
 };
 
 const setCookie = (res, token) => {
   res.cookie("jwt", token, { httpOnly: true });
 };
 
-
-export const getUserEmail = async (userId)=> {
+export const getUserEmail = async (userId) => {
   const user = await managerUser.getElementById(userId);
   return user.email;
-}
+};
