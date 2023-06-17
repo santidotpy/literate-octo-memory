@@ -7,15 +7,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
-    "tests": "mocha tests/*.test.js"
+    "tests": "mocha tests/*.test.js",
+    "stest": "mocha tests/Supertest.test.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "chai": "^4.3.7",
     "handlebars": "^4.5.0",
     "mocha": "^10.2.0",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3"
   },
   "dependencies": {
     "@faker-js/faker": "^8.0.0",
