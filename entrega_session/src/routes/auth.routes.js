@@ -13,7 +13,7 @@ routerAuth.post(
   "/signup",
   passport.authenticate("register"),
   async (req, res) => {
-    res.send({ status: "success", message: "User created successfully" });
+    res.send({ status: "success", message: "User successfully created" });
   }
 );
 
