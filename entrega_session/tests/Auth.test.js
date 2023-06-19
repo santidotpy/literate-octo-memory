@@ -52,3 +52,14 @@ describe("POST /auth/login", function () {
     expect(_body).to.have.property("token");
   });
 });
+
+// GET /users
+describe("GET /auth/users", function () {
+  it("should return all users", async function () {
+    this.timeout(8000);
+    const { statusCode, ok, _body } = await api.get("/auth/users");
+    expect(statusCode).to.equal(200);
+    expect(ok).to.equal(true);
+    expect(_body.docs).to.be.an("array");
+  });
+});
