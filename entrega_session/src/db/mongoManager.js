@@ -20,14 +20,14 @@ export class mongoManager {
     }
   }
 
-  // async disconnect() {
-  //     try {
-  //         await mongoose.disconnect();
-  //         console.log("MongoDB disconnected");
-  //     } catch (error) {
-  //         console.log('Something went wrong during disconnection', error);
-  //     }
-  // }
+  async disconnect() {
+      try {
+          await mongoose.disconnect();
+          console.log("MongoDB disconnected");
+      } catch (error) {
+          console.log('Something went wrong during disconnection', error);
+      }
+  }
 
   // async getElements() {
   //   this.#connect();
