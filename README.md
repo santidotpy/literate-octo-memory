@@ -10,3 +10,9 @@ npm i
  ```sh
 npm run dev
 ```
+
+
+#### 🧪 Run tests
+ ```sh
+npm run tests
+```
